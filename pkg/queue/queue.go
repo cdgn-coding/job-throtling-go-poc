@@ -26,7 +26,7 @@ func (q *Queue) Start() {
 func (q *Queue) worker() {
 	for {
 		job := <-q.jobs
-		job.run()
+		job.Run()
 	}
 }
 

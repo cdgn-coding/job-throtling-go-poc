@@ -1,13 +1,17 @@
 package queue
 
 type Runnable interface {
-	run()
+	Run()
 }
 
 type RunnableFunc struct {
 	f func()
 }
 
-func (r *RunnableFunc) run() {
+func NewRunnable(f func()) RunnableFunc {
+	return RunnableFunc{f}
+}
+
+func (r RunnableFunc) Run() {
 	r.f()
 }

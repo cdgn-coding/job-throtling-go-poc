@@ -27,7 +27,7 @@ func callService(address models.Address, service *services.AddressService, resul
 }
 
 func main() {
-	jobQueue := queue.NewQueue(2, 2)
+	jobQueue := queue.NewQueue(3, 3)
 	jobQueue.Start()
 
 	reader := csv.NewReaderChannel[models.Address]()
@@ -35,12 +35,13 @@ func main() {
 	addressService := services.NewAddressService()
 
 	addresses := make(chan models.Address)
+	totalAddresses := make(chan int)
 	results := make(chan Result)
 
 	fileReader, _ := os.Open(filepath)
 
 	// Read file to the channel addresses
-	go reader.Read(fileReader, addresses)
+	go reader.Read(fileReader, addresses, totalAddresses)
 
 	// When receiving records in the channel, add api calls to the queue
 	go func() {
@@ -53,10 +54,21 @@ func main() {
 	// Read all results and write to done channel in the end
 	done := make(chan bool)
 	go func() {
-		numberOfAddresses := 6
-		for i := 0; i < numberOfAddresses; i++ {
-			result := <-results
-			log.Printf("%s\n", result.response.Name)
+		var processed = 0
+		var total = 0
+		var receivedTotal = false
+		for {
+			select {
+			case total = <-totalAddresses:
+				receivedTotal = true
+			case <-results:
+				processed += 1
+			}
+
+			if receivedTotal && processed == total {
+				log.Println("Done!")
+				break
+			}
 		}
 		done <- true
 	}()

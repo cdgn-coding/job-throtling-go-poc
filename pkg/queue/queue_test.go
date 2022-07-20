@@ -13,7 +13,7 @@ type RunnableMock struct {
 	mock.Mock
 }
 
-func (m *RunnableMock) run() {
+func (m *RunnableMock) Run() {
 	m.Called()
 }
 

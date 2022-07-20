@@ -10,7 +10,7 @@ import (
 )
 
 type Result struct {
-	response models.Address
+	response *models.Address
 	err      error
 }
 
@@ -20,7 +20,7 @@ func callService(address models.Address, service *services.AddressService, resul
 	return queue.NewRunnable(func() {
 		resp, err := service.Post(address)
 		results <- Result{
-			response: *resp,
+			response: resp,
 			err:      err,
 		}
 	})

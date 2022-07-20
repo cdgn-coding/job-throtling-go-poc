@@ -38,8 +38,11 @@ func main() {
 	results := make(chan Result)
 
 	fileReader, _ := os.Open(filepath)
+
+	// Read file to the channel addresses
 	go reader.Read(fileReader, addresses)
 
+	// When receiving records in the channel, add api calls to the queue
 	go func() {
 		for address := range addresses {
 			job := callService(address, addressService, results)
@@ -47,6 +50,7 @@ func main() {
 		}
 	}()
 
+	// Read all results and write to done channel in the end
 	done := make(chan bool)
 	go func() {
 		numberOfAddresses := 6

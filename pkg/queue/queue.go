@@ -1,15 +1,8 @@
 package queue
 
-type Runnable interface {
-	run()
-}
-
-type RunnableFunc struct {
-	f func()
-}
-
-func (r *RunnableFunc) run() {
-	r.f()
+type IQueue interface {
+	Start()
+	AddJob(runnable Runnable)
 }
 
 type Queue struct {
